@@ -1,6 +1,6 @@
 $(function(){
     var apiUrl = localStorage["jenkins-url"];
-    var jobName = localStorage["job-name"];
+    var jobNames = localStorage["job-names"];
     var useWebsocket   = localStorage["use-websocket"];
     var websocketUrl   = localStorage["websocket-url"];
     var pollingInterval    = localStorage["polling-interval"];
@@ -9,7 +9,7 @@ $(function(){
         pollingInterval = 60; // default 60 sec
     }
 
-    if (apiUrl == null || jobName == null || (useWebsocket == 'true' && websocketUrl == null)) {
+    if (apiUrl == null || jobNames == null || (useWebsocket == 'true' && websocketUrl == null)) {
         return;
     }
 
@@ -69,10 +69,10 @@ $(function(){
     // replace popup event
     chrome.browserAction.setPopup({popup : ""});
     chrome.browserAction.onClicked.addListener(function(tab) {
-        window.open(apiUrl + JOB + jobName);
+        window.open(apiUrl);
     });
 
-    function fetch(apiUrl, num) {
+    function fetch(apiUrl, jobName, num) {
         if (num == null) {
             num = BUILD_NUMBER;
         }
@@ -108,8 +108,9 @@ $(function(){
         });
 
         ws.bind("websocket::message", function(_, obj) {
-            if (obj.project == jobName) {
-                fetch(apiUrl, obj.number);
+            jobName = obj.project;
+            if (isTargetJob(jobName)) {
+                fetch(apiUrl, jobName, obj.number);
             }
         });
 
@@ -141,9 +142,9 @@ $(function(){
     if (useWebsocket == 'true') {
         bind(websocketUrl, apiUrl);
     } else {
-        fetch(apiUrl, BUILD_NUMBER); // first fetch
+        fetchJobs(); // first fetch
         setInterval(function() {
-            fetch(apiUrl, BUILD_NUMBER);
+            fetchJobs();
         }, POLLING_TIME);
     }
 
@@ -156,5 +157,29 @@ $(function(){
       setTimeout(function(){
         notify.cancel();
       }, delay);
+    }
+
+    function fetchJobs() {
+        jobs = getJobs();
+        l = jobs.length;
+        for(i = 0; i < l; i++) {
+            jobName = jobs[i];
+            fetch(apiUrl, jobName, BUILD_NUMBER);
+        }
+    }
+
+    function isTargetJob(jobName) {
+        jobs = getJobs();
+        l = jobs.length;
+        for(i = 0; i < l; i++) {
+            if(jobName == jobs[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function getJobs() {
+        return jobNames.split('/');
     }
 });
