@@ -4,6 +4,7 @@ $(function(){
     var useWebsocket   = localStorage["use-websocket"];
     var websocketUrl   = localStorage["websocket-url"];
     var pollingInterval    = localStorage["polling-interval"];
+    var notifyOnlyFail = localStorage["notify-only-fail"];
 
     if(pollingInterval == null) {
         pollingInterval = 60; // default 60 sec
@@ -40,6 +41,13 @@ $(function(){
             return url + "/";
         }
         return url;
+    }
+
+    function isSuccess(result) {
+        if (result == "SUCCESS") {
+          return true
+        }
+        return false;
     }
 
     function getIcon(result) {
@@ -83,6 +91,9 @@ $(function(){
                 return;
             }
             if (prevBuild != json.number) {
+                if(notifyOnlyFail == 'true' && isSuccess(json.result)) {
+                    return;
+                }
                 prevBuild = json.number;
                 chrome.browserAction.setBadgeText({text: String(json.number)});
                 chrome.browserAction.setBadgeBackgroundColor({color: getColor(json.result)});
