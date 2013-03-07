@@ -6,7 +6,7 @@ $(function(){
     var pollingInterval    = localStorage["polling-interval"];
     var notifyOnlyFail = localStorage["notify-only-fail"];
 
-    if(pollingInterval == null) {
+    if(pollingInterval == null || pollingInterval < 1) {
         pollingInterval = 60; // default 60 sec
     }
 
