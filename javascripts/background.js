@@ -95,8 +95,10 @@ $(function(){
                     return;
                 }
                 prevBuild = json.number;
-                chrome.browserAction.setBadgeText({text: String(json.number)});
-                chrome.browserAction.setBadgeBackgroundColor({color: getColor(json.result)});
+                if(getJobs().length <= 1) {
+                  chrome.browserAction.setBadgeText({text: String(json.number)});
+                  chrome.browserAction.setBadgeBackgroundColor({color: getColor(json.result)});
+                }
                 $.fn.desktopNotify(
                     {
                         picture: getIcon(json.result),
