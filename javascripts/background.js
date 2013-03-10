@@ -5,6 +5,7 @@ $(function(){
     var websocketUrl   = localStorage["websocket-url"];
     var pollingInterval    = localStorage["polling-interval"];
     var notifyOnlyFail = localStorage["notify-only-fail"];
+    var displayTime      = localStorage["notify-close-delay"];
 
     if(pollingInterval == null || pollingInterval < 1) {
         pollingInterval = 60; // default 60 sec
@@ -20,7 +21,7 @@ $(function(){
     var BUILD_NUMBER = "lastBuild"
     var API_SUB  = "/api/json";
     var POLLING_TIME = pollingInterval * 1000;
-    var DISPLAY_TIME = 3 * 1000;
+    var DISPLAY_TIME = displayTime * 1000;
 
     $.ajaxSetup({
         "error": function() {
@@ -165,7 +166,9 @@ $(function(){
 
     function notifyOnDisplayHandler(e) {
       notify = e.target;
-      notifyLazyClose(notify, DISPLAY_TIME);
+      if(DISPLAY_TIME > 0) {
+        notifyLazyClose(notify, DISPLAY_TIME);
+      }
     }
 
     function notifyLazyClose(notify, delay) {
