@@ -165,7 +165,7 @@ $(function(){
     }
 
     function notifyOnDisplayHandler(e) {
-      notify = e.target;
+      var notify = e.target;
       if(DISPLAY_TIME > 0) {
         notifyLazyClose(notify, DISPLAY_TIME);
       }
