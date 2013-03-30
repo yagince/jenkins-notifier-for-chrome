@@ -103,7 +103,7 @@ $(function(){
                 prevBuild = json.number;
                 chrome.browserAction.setBadgeText({text: ""});
                 chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
-                if(getJobs().length <= 1) {
+                if(jobNames != "" && getJobs().length == 1) {
                   chrome.browserAction.setBadgeText({text: String(json.number)});
                   chrome.browserAction.setBadgeBackgroundColor({color: getColor(json.result)});
                 }
@@ -195,6 +195,9 @@ $(function(){
     function isTargetJob(jobName) {
         var jobs = getJobs();
         var l = jobs.length;
+        if (jobNames == "") {
+          return true
+        }
         for(var i = 0; i < l; i++) {
             if(jobName == jobs[i]) {
                 return true;
