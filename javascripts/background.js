@@ -195,7 +195,6 @@ $(function(){
     function isTargetJob(jobName) {
         var jobs = getJobs();
         var l = jobs.length;
-        var jobName = "";
         for(var i = 0; i < l; i++) {
             if(jobName == jobs[i]) {
                 return true;
