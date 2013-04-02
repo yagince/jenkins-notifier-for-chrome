@@ -21,7 +21,7 @@ $(function(){
     }
 
     apiUrl = appendLastSlash(apiUrl);
-    var prevBuild = -1;
+    var prevBuildNumbers = {};
     var JOB = "job/"
     var BUILD_NUMBER = "lastBuild"
     var API_SUB  = "/api/json";
@@ -96,11 +96,11 @@ $(function(){
             if (result != "success") {
                 return;
             }
-            if (prevBuild != json.number) {
+            if (prevBuildNumbers[jobName] != json.number) {
                 if(notifyOnlyFail == 'true' && isSuccess(json.result)) {
                     return;
                 }
-                prevBuild = json.number;
+                prevBuildNumbers[jobName] = json.number;
                 chrome.browserAction.setBadgeText({text: ""});
                 chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
                 if(jobNames != "" && getJobs().length == 1) {
