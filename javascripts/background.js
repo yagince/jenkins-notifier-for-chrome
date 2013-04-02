@@ -7,6 +7,9 @@ $(function(){
     var pollingInterval    = localStorage["polling-interval"];
     var notifyOnlyFail = localStorage["notify-only-fail"];
     var displayTime      = localStorage["notify-close-delay"];
+    
+    var userId        = localStorage["user-id"];
+    var apiToken      = localStorage["api-token"];
 
     if(pollingInterval == null || pollingInterval < 1) {
         pollingInterval = 60; // default 60 sec
@@ -28,16 +31,21 @@ $(function(){
     var POLLING_TIME = pollingInterval * 1000;
     var DISPLAY_TIME = displayTime * 1000;
 
+    var accessFailed = false;
+
     $.ajaxSetup({
         "error": function() {
-            $.fn.desktopNotify(
-                {
-                    picture: getIcon("FAILURE"),
-                    title: "Failed to access to Jenkins",
-                    text : apiUrl,
-                    ondisplay: notifyOnDisplayHandler
-                }
-            );
+            if(!accessFailed) {
+                $.fn.desktopNotify(
+                    {
+                        picture: getIcon("FAILURE"),
+                        title: "Failed to access to Jenkins",
+                        text : apiUrl,
+                        ondisplay: notifyOnDisplayHandler
+                    }
+                );
+                accessFailed = true;
+            }
         }
     });
 
@@ -90,7 +98,7 @@ $(function(){
         if (num == null) {
             num = BUILD_NUMBER;
         }
-        var url = apiUrl + JOB + jobName + "/" + num + API_SUB;
+        var url = withBasicAuth(apiUrl, userId, apiToken) + JOB + jobName + "/" + num + API_SUB;
 
         $.getJSON(url, function(json, result) {
             if (result != "success") {
@@ -208,5 +216,9 @@ $(function(){
 
     function getJobs() {
         return jobNames.split("/");
+    }
+
+    function withBasicAuth(apiUrl, id, pass) {
+        return id && pass ? apiUrl.replace(/:\/\//, "://"+id+":"+pass+"@") : apiUrl;
     }
 });
