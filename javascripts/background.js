@@ -110,7 +110,7 @@ $(function(){
                 $.fn.desktopNotify(
                     {
                         picture: getIcon(json.result),
-                        title: "#" + json.number + " (" + json.result + ")",
+                        title: jobName + " #" + json.number + " (" + json.result + ")",
                         text : json.actions[0].causes[0].shortDescription,
                         ondisplay: notifyOnDisplayHandler
                     }
