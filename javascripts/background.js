@@ -108,7 +108,9 @@ $(function(){
                 if(notifyOnlyFail == 'true' && isSuccess(json.result)) {
                     return;
                 }
-                prevBuildNumbers[jobName] = json.number;
+                if (json.result) {
+                    prevBuildNumbers[jobName] = json.number;
+                }
                 chrome.browserAction.setBadgeText({text: ""});
                 chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
                 if(jobNames != "" && getJobs().length == 1) {
